@@ -32,8 +32,6 @@ object SortableChallenge {
     val end = System.currentTimeMillis()
     println(end - start)
     
-    Source.fromFile("listings.txt").getLines.foreach(line =>)
-    
     val out = new PrintStream("output.txt")
     out.println("---MANUFACTURER---")
     out.println(builder.manufacturerTrie)
