@@ -27,5 +27,7 @@ final class Product(
   
   def this(any: Any) =
     this(any.asInstanceOf[Map[String, String]])
+    
+  override def toString = name
 
 }
