@@ -38,4 +38,15 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
       case None => None
     }
   
+  private def pathString(a: String = "") : String =
+    if (parent != null)
+      parent.pathString(char + a)
+    else a
+      
+  override def toString =
+    (data match {
+      case Some(x) => this.pathString(" -> " + x.toString + "\n")
+      case None => ""
+    }) + children.foldLeft("")((s, e) => s + e._2.toString)
+     
 }
