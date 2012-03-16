@@ -3,6 +3,8 @@
  */
 package ca.eandb.sortable
 
+import scala.collection.mutable._
+
 /**
  * @author Brad Kimmel
  *
