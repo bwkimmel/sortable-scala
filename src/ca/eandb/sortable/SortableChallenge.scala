@@ -28,11 +28,7 @@ object SortableChallenge {
     out.println("---MODEL---")
     out.println(builder.modelTrie)
     out.close()
-    
-    val map = collection.mutable.Map.empty[String, String]
-    map("abc") = "def"
-    map("ghi") = "jkl"
-    println(map)
+
   }
   
 }
