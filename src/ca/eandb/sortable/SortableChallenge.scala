@@ -15,16 +15,6 @@ import java.io.PrintStream
 object SortableChallenge {
   def main(args: Array[String]) = {
     
-//    val trie = new Trie[Boolean]
-//    
-//    trie insert "abc" data = Some(true)
-//    trie insert "abd" data = Some(true)
-//    trie insert "all" data = Some(true)
-//    trie insert "xyz" data = Some(true)
-//    
-//    println(trie)
-//    exit(0)
-    
     val builder = new ProductTrieBuilder
     val start = System.currentTimeMillis()
     Source.fromFile("products.txt").getLines.foreach(line =>
