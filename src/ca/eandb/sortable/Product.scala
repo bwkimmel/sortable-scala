@@ -8,7 +8,7 @@ package ca.eandb.sortable
  *
  */
 final class Product(
-    val productName : String,
+    val name : String,
     val manufacturer : String,
     val model : String,
     val family : String,
