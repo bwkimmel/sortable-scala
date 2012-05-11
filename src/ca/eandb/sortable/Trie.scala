@@ -3,7 +3,7 @@
  */
 package ca.eandb.sortable
 
-import scala.collection.mutable._
+import scala.collection.immutable._
 
 /**
  * @author Brad Kimmel
@@ -23,7 +23,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
     case Some(child) => child
     case None => { 
       val child = new Trie[T](this, c)
-      children(c) = child
+      children += { c -> child }
       child
     }
   }

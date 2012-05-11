@@ -3,6 +3,7 @@
  */
 package ca.eandb.sortable
 
+import ca.eandb.sortable.ProductTrieBuilder._
 import scala.collection.mutable._
 
 /**
@@ -13,8 +14,6 @@ final class ProductTrieBuilder {
   
   private val allNumbers = "^[0-9]*$".r.pattern
   private val allLetters = "^[a-z]*$".r.pattern
-  
-  type ProductTrie = Trie[Map[Product, Boolean]]
   
   val manufacturerTrie = new ProductTrie
   val modelTrie = new ProductTrie
@@ -50,11 +49,12 @@ final class ProductTrieBuilder {
          val nextAnyNumbers = anyNumbers || !allLetters.matcher(words head).matches()
          val nextTotalLength = totalLength + words.head.length
          if (acceptString(nextAnyLetters, nextAnyNumbers, nextTotalLength)) {
-           tip.get(Map.empty)(product) = true
+           tip.data = Some(tip.data.getOrElse(Map.empty) + { product -> true })
+           
            nextAncestor = Some(tip)
 
            ancestor match {
-             case Some(prev) => prev.data.get(product) = false
+             case Some(prev) => prev.data = Some(prev.data.get + { product -> false })
              case None => ()
            }
          } 
@@ -65,5 +65,12 @@ final class ProductTrieBuilder {
      words.tails.foreach(addChain(_))
     
   }
+
+}
+
+object ProductTrieBuilder {
+    
+  type ProductMap = scala.collection.Map[Product, Boolean]
+  type ProductTrie = Trie[ProductMap]
 
 }
