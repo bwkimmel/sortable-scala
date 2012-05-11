@@ -71,7 +71,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * @return The specified child <code>Trie</code> node, or <code>None</code>
    * 		if no such child exists.
    */
-  def find(c: Char) : Option[Trie[T]] = children get c
+  def find(c: Char) = children get c
   
   /**
    * Finds a descendant of this <code>Trie</code> node.
