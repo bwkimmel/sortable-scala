@@ -34,9 +34,9 @@ final class Product(
         fields("announced-date"))
   
   /**
-   * Creates a <code>Product</code> from an object that is convertable to a
+   * Creates a <code>Product</code> from an object that is convertible to a
    * <code>Map[String, String]</code>.
-   * @param any An object convertable to a <code>Map[String, String]</code>.
+   * @param any An object convertible to a <code>Map[String, String]</code>.
    * @see this(Map[String, String])
    */
   def this(any: Any) =
