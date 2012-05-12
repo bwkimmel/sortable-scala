@@ -103,6 +103,14 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
   def foreachAncestor(f : Trie[T] => Unit) : Unit =
     if (!isRoot) parent.foreachAncestorOrSelf(f)
 
+  /**
+   * Gets the prefix string representing the path from the root node to this
+   * node.
+   * @param a Accumulates the result.  The prefix string will be prepended
+   *   to this.
+   * @return The prefix string representing the path from the root node to
+   *   this node, with <code>a</code> appended.
+   */
   private def pathString(a: String = "") : String =
     if (parent != null)
       parent.pathString(char + a)
