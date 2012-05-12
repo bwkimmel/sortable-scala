@@ -2,6 +2,7 @@
  *
  */
 package ca.eandb.sortable
+import com.twitter.json.Json
 
 /**
  * @author Brad Kimmel
@@ -24,5 +25,18 @@ final class Listing(
   
   def this(any: Any) =
     this(any.asInstanceOf[Map[String, String]])
+
+  def toJson =
+    (Json build {
+      val fields = Map(
+        "title" -> title,
+        "manufacturer" -> manufacturer,
+        "currency" -> currency,
+        "price" -> price)
+      product match {
+        case Some(x) => fields + { "product_name" -> x.name }
+        case None => fields
+      }
+    }) toString
 
 }
