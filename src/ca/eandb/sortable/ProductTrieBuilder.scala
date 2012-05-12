@@ -12,10 +12,16 @@ import scala.collection.mutable._
  */
 final class ProductTrieBuilder {
   
+  /** A pattern that matches strings of only numbers. */
   private val allNumbers = "^[0-9]*$".r.pattern
+  
+  /** A pattern that matches strings of only letters. */
   private val allLetters = "^[a-z]*$".r.pattern
   
+  /** The manufacturer <code>Trie</code>. */
   val manufacturerTrie = new ProductTrie
+  
+  /** The model <code>Trie</code>. */
   val modelTrie = new ProductTrie
   
   /**
@@ -46,9 +52,30 @@ final class ProductTrieBuilder {
 
   }
   
+	/**
+	 * Inserts substrings of the provided string that are to be considered as
+	 * matches into the trie and associate the specified product with the nodes
+	 * corresponding to the ends of those substrings. 
+	 * @param root The root <code>TrieNode</code> of the trie to insert into.
+	 * @param product The <code>Product</code> to associate with the substrings
+	 * 		of <code>value</code>.
+	 * @param isModel A value indicating if this string is for the model trie
+	 * 		(affects the rules used to judge whether a substring is considered
+	 * 		to be a match).
+	 * @param value The <code>String</code> whose substrings to insert into the
+	 * 		trie.
+	 */
   private def processField(root: ProductTrie, product: Product, isModel: Boolean, value: String) = {
+    
+     /* Split the string into its component words and insert the concatenation
+      * of every consecutive subsequence of those words into the trie, subject
+      * to some additional rules described below.
+      */
      val words = StringUtil.normalize(value).split(" ").toList
      
+     /* Function indicating whether the specified substring should be inserted
+      * into the trie.
+      */
      def acceptString(anyLetters: Boolean, anyNumbers: Boolean, totalLength: Int) =
        (totalLength > 1) &&
        ((!isModel) || (totalLength <= 3) || anyNumbers) &&
