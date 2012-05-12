@@ -27,7 +27,7 @@ final class Listing(
   def this(any: Any) =
     this(any.asInstanceOf[Map[String, String]])
 
-  def toJson =
+  override def toJson =
     (Json build {
       val fields = Map(
         "title" -> title,

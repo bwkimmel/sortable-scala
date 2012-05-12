@@ -42,7 +42,7 @@ final class Product(
   def this(any: Any) =
     this(any.asInstanceOf[Map[String, String]])
     
-  def toJson =
+  override def toJson =
     (Json build Map(
 	  "product_name" -> name,
 	  "manufacturer" -> manufacturer,
