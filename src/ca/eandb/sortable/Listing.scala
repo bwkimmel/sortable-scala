@@ -13,6 +13,8 @@ final class Listing(
     val currency : String,
     val price : Float) {
   
+  var product : Option[Product] = None
+
   def this(fields: Map[String, String]) =
     this(
         fields("title"),
