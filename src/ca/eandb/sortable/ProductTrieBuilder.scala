@@ -18,16 +18,35 @@ final class ProductTrieBuilder {
   val manufacturerTrie = new ProductTrie
   val modelTrie = new ProductTrie
   
+  /**
+   * Adds the sepcified product to the tries.
+   * @param product The <code>Product</code> to add.
+   */
   def += (product: Product) = {
-    addStrings(manufacturerTrie, product, false, product.manufacturer)
-    addStrings(modelTrie, product, true, product.name)
-    addStrings(modelTrie, product, true,
-        if (product.family.nonEmpty) 
-          product.family + " " + product.model
-        else product.model)
+
+    /* Add the manufacturer string to a separate trie. */
+    processField(manufacturerTrie, product, false, product.manufacturer)
+
+	/* Some product entries have the family, while others what have what
+	 * looks to be the "family" as part of the model.  Still others may
+	 * only include the "family" within the product_name field.  For
+	 * example, in the provided product list, the Canon "EOS" family seems
+	 * particularly inconsistent about where the word "EOS" is found.  To
+	 * capture all possible cases, we include several possibilities that
+	 * may represent the whole model name.  Note that these only indicate
+	 * which strings *might* be matches for a given product -- so there's
+	 * no harm in adding "too much" information here.
+	 */
+    processField(modelTrie, product, true, product.name)
+    processField(modelTrie, product, true, product.model)
+    processField(modelTrie, product, true,
+      if (product.family.nonEmpty)
+        product.family + " " + product.model
+      else product.model)
+
   }
   
-  private def addStrings(root: ProductTrie, product: Product, isModel: Boolean, value: String) = {
+  private def processField(root: ProductTrie, product: Product, isModel: Boolean, value: String) = {
      val words = StringUtil.normalize(value).split(" ").toList
      
      def acceptString(anyLetters: Boolean, anyNumbers: Boolean, totalLength: Int) =

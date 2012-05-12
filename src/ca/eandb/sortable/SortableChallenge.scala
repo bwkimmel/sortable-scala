@@ -52,26 +52,41 @@ object SortableChallenge {
     val matcher = new ListingMatcher(builder)
     val listings = 
       if (args.length > 1 && !(args(1) equals "-"))
-    	Source.fromFile("listings.txt")
-      else Source.fromInputStream(System.in);
+        Source.fromFile(args(1))
+      else Source.fromInputStream(System.in)
 
-    start = System.currentTimeMillis()
-    listings.getLines.foreach(line =>
-      matcher.matchListing(new Listing(Json.parse(line))))
-    end = System.currentTimeMillis()
-    
-    printf("Time required to analyse listings: %dms", end - start);
-    println()
-    
+    var count = 0
+    var matchCount = 0;
     val out =
       if (args.length > 2 && !(args(2) equals "-"))
         new PrintStream(args(2))
-      else System.out;
-    out.println("---MANUFACTURER---")
-    out.println(builder.manufacturerTrie)
-    out.println("---MODEL---")
-    out.println(builder.modelTrie)
+      else System.out
+    start = System.currentTimeMillis()
+    val results = listings.getLines.map(line => {
+      val listing = new Listing(Json.parse(line))
+      listing.product = matcher.matchListing(listing)
+      listing.product match {
+        case Some(x) => matchCount += 1;
+        case None => ()
+      }
+      count += 1
+      listing.toJson
+    })
+
+    results.foreach(out println)
     out.close()
+    end = System.currentTimeMillis()
+
+    printf("Time required to analyse listings: %dms", end - start);
+    println()
+
+    printf("Matched %d of %d listings.", matchCount, count);
+    println()
+//    out.println("---MANUFACTURER---")
+//    out.println(builder.manufacturerTrie)
+//    out.println("---MODEL---")
+//    out.println(builder.modelTrie)
+//    out.close()
 
   }
   

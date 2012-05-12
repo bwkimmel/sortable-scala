@@ -46,6 +46,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
           }
           if (m.nonEmpty) {
             matches += { node -> m }
+            node.foreachAncestor(matches remove);
           }
         }
         case None => ()
@@ -55,13 +56,31 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
       if (words.tail.nonEmpty) matchCursors(nextCursors, words.tail)
     }
 
-    matchCursors(List(trie), s.split(" ").toList)
+    val words = StringUtil.normalize(s).split(" ")
+    if (words.nonEmpty) matchCursors(List(trie), words.toList)
     
-    matches.headOption match {
-      case Some(x) => x._2
-      case None => null
-    }
-    
+    var results : ProductMap = null;
+    var foundSingleton = false;
+    matches.values.foreach(products => {
+      if (!foundSingleton && products.size == 1) {
+        foundSingleton = true;
+        results = products;
+      } else {
+        if (foundSingleton) {
+          if (products.size == 1) results.filterKeys(products contains);
+        } else {
+          if (results == null) {
+            results = products
+          } else {
+            results.filterKeys(products contains);
+          }
+        }
+      }
+    })
+
+    if (useMaximalFlag && results != null && results.size > 1)
+      results.filterNot(_._2)
+    else results
     
   }
       
@@ -71,10 +90,9 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
       filter: ProductMap, 
       useMaximalFlag: Boolean) : Option[Product] = {
     val products = matchAll(trie, s, filter, useMaximalFlag)
-    if (products != null && products.nonEmpty)
+    if (products != null && products.size == 1)
       Some(products.head._1)
     else None
   }
-        
-  
+
 }
