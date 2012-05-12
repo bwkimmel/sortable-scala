@@ -14,12 +14,12 @@ import scala.collection.immutable._
  * TODO This could be made more space-efficient by combining chains of nodes
  *      with only one child into a single object.  To accomplish this, we would
  *      refactor this class by extracting its interface to one with this name
- *      (i.e., TrieNode would become an interface).  The code in this class
+ *      (i.e., Trie would become an interface).  The code in this class
  *      would move to a concrete "SingleTrieNode" class and a new
  *      "CompactTrieNodeChain" class would be created that stores the string
  *      representing the chain  The single "data" field would have to become a 
  *      map (mapping the index to the corresponding data object).  A new
- *      class "ChainTrieNode" would then implement the TrieNode interface and
+ *      class "ChainTrieNode" would then implement the Trie interface and
  *      would have fields for its corresponding CompactTrieNodeChain object as
  *      well as an index into the chain.  Instances of ChainTrieNode would only
  *      be created on-demand.
