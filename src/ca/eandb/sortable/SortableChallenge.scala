@@ -9,8 +9,11 @@ import java.io.FileWriter
 import java.io.PrintStream
 
 /**
+ * An application that matches product listings to a collection of known
+ * products.  This application implements a coding challenge described at
+ * <a href="http://sortable.com/blog/coding-challenge/">http://sortable.com/blog/coding-challenge/</a>.
+ * 
  * @author Brad Kimmel
- *
  */
 object SortableChallenge {
   
@@ -55,12 +58,15 @@ object SortableChallenge {
         Source.fromFile(args(1))
       else Source.fromInputStream(System.in)
 
-    var count = 0
-    var matchCount = 0;
+    var count = 0			// total number of listings
+    var matchCount = 0		// number of matching listings
     val out =
       if (args.length > 2 && !(args(2) equals "-"))
         new PrintStream(args(2))
       else System.out
+      
+    // Read the listings, match then against the products, and print the
+    // results.
     start = System.currentTimeMillis()
     val results = listings.getLines.map(line => {
       val listing = new Listing(Json.parse(line))
@@ -82,11 +88,6 @@ object SortableChallenge {
 
     printf("Matched %d of %d listings.", matchCount, count);
     println()
-//    out.println("---MANUFACTURER---")
-//    out.println(builder.manufacturerTrie)
-//    out.println("---MODEL---")
-//    out.println(builder.modelTrie)
-//    out.close()
 
   }
   
