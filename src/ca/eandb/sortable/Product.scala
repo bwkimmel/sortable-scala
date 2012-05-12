@@ -3,6 +3,7 @@
  */
 package ca.eandb.sortable
 import com.twitter.json.Json
+import com.twitter.json.JsonSerializable
 
 /**
  * An entity object representing a product.
@@ -13,7 +14,7 @@ final class Product(
     val manufacturer : String,
     val model : String,
     val family : String,
-    val announcedDate : String) {
+    val announcedDate : String) extends JsonSerializable {
   
   /**
    * Creates a <code>Product</code> from a <code>Map</code> indicating its

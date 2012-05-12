@@ -3,6 +3,7 @@
  */
 package ca.eandb.sortable
 import com.twitter.json.Json
+import com.twitter.json.JsonSerializable
 
 /**
  * @author Brad Kimmel
@@ -12,7 +13,7 @@ final class Listing(
     val title : String,
     val manufacturer : String,
     val currency : String,
-    val price : Float) {
+    val price : Float) extends JsonSerializable {
   
   var product : Option[Product] = None
 
