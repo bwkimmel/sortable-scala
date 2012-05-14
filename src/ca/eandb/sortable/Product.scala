@@ -4,6 +4,7 @@
 package ca.eandb.sortable
 import scala.util.parsing.json.JSONObject
 import scala.util.parsing.json.JSONArray
+import scala.collection.immutable.Map
 
 /**
  * An entity object representing a product.
@@ -45,7 +46,7 @@ final class Product(
         "family" -> family,
         "announced-date" -> announcedDate)
       if (!listings.isEmpty)
-        fields + { "products" -> new JSONArray(listings.map(_.toJSON(false))) }
+        fields + { "listings" -> new JSONArray(listings.map(_.toJSON(false))) }
       else fields
     })
 
