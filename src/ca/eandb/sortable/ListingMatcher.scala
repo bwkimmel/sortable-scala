@@ -152,51 +152,52 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
     val words = StringUtil.normalize(s).split(" ")
     if (words.nonEmpty) matchCursors(List(trie), words.toList)
     
-    /* Attempt to match all of the sequences of consecutive words against
-     * against the provided trie.  For example, if s is "The quick brown
-     * fox", we want to consider the following for possible matches:
+    /* Now that we have a collection of possible matches, we must resolve
+     * them to a minimal set of matches (ideally only one).  The following
+     * possibilities should be considered:
      * 
-     *   - "The", "quick", "brown", "fox"
-     *   - "Thequick", "quickbrown", "brownfox"
-     *   - "Thequickbrown", "quickbrownfox"
-     *   - "Thequickbrownfox"
-     * 
-     * The reason for this logic is so that we can match against listings
-     * where the model number is split into multiple words in the listing,
-     * but not in the product data, or vice versa -- or to allow for the
-     * listing to contain only a partial model number (for example,
-     * "Panasonic FP 7" instead of "Panasonic DMC-FP7").
-     * 
-     * To accomplish this, we keep track of a queue of positions (cursors)
-     * within the trie.  We iterate through the list of words, and for each
-     * word, we attempt to match that word using each cursor (as well as
-     * the root node, which is added as a cursor each time through the
-     * loop).  If we find a descendant matching the word, then we:
-     * 
-     *   1) Check to see if the descendant has products associated with it.
-     *      If there are, we keep track of the set of products associated
-     *      with this node in a map (matches).  If a filter was provided,
-     *      it is employed here.
-     *   2) Add the descendant to the queue as a new cursor.
-     *   
-     * We also only want to consider longest matches.  That is, if a
-     * substring of a match also matches, we want to ignore the matches for
-     * the substring.  The reason for this rule is so that for pairs of 
-     * products whose model name differs from another only by the addition
-     * of more characters, if those characters are present, we do not want
-     * to report a match against the other product.  For example, consider
-     * 
-     *   Pentax WG-1
-     *   Pentax WG-1 GPS
-     *   
-     * If a listing contained the words "WG-1 GPS", without this rule both
-     * products would match this listing, resulting in the algorithm
-     * reporting no certain match.
-     * 
-     * We accomplish this by removing the matches for all ancestors
-     * when inserting a new matching node into the map.  Because we are
-     * adding matches in breadth-first order, we can do this within the
-     * loop rather than as a separate tree-traversal at the end.
+     *   1) There may be conflicting matches against multiple products.
+     *      That is, one trie node matches against exactly one product, and
+     *      another node matches against exactly one different product.
+     *      More generally, two trie nodes may match but the intersection
+     *      of the sets of matching products is empty.
+     *      
+     *      If this occurs, it is likely because the listing refers to an
+     *      accessory (such as a battery, case, etc) that may be used for
+     *      multiple products.  For example:
+     *      
+     *      "Battery pack to be used with Canon EOS 5D, 7D, or T2i cameras"
+     *      
+     *      Notice that a listing like this one would not be caught by the
+     *      "for/pour" rule in the preprocessing stage.
+     *      
+     *   2) Depending on the word separation for the model number in the
+     *      product database vs the listings, and whether a family name is
+     *      included or not may cause quirks in the matching.  For example,
+     *      consider the following products:
+     *      
+     *       (a) "Canon EOS Rebel T1i"
+     *       (b) "Canon EOS Rebel T2i"
+     *       (c) "Canon Rebel T3i"
+     *       
+     *      Here, "EOS" probably should be included in (c), but it is not.
+     *      If the listing says "Canon EOS Rebel T3i", then EOS will match
+     *      against (a), (b), (and probably others), but "Rebel T3i" will
+     *      result in a unique match (c).  Even though the resulting
+     *      intersection of matching sets will be empty, we want the latter
+     *      match to take precedence because it is a unique match.
+     *      
+     *  The following rules are therefore used to resolve the matches:
+     *  
+     *   1) If there are any nodes which match against only one product,
+     *      then we return that product as long as ALL such nodes match
+     *      against the same product.
+     *   2) If all matching nodes match against multiple products, then we
+     *      return a set containing only those products which are matched
+     *      by every node.  Note that, because we have eliminated matching
+     *      nodes that were ancestors of other matching nodes, conflicts
+     *      between such pairs of nodes do not affect the results.  We only
+     *      consider maximal matches.
      */
     var results : ProductMap = null;
     var foundSingleton = false;
