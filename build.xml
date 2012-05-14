@@ -37,7 +37,7 @@
 	 
 	  <path id="project.classpath">
 	    <pathelement location="${scala-library.jar}"/>
-	    <pathelement location="${build-classes.dir}"/> <!-- used during recompilation -->
+	    <pathelement location="${classes.dir}"/> <!-- used during recompilation -->
 	  </path>
 	 
 	  <path id="scala.classpath">
@@ -81,7 +81,7 @@
 			<fileset dir="${classes.dir}" includes="**" />
 			<manifest>
 				<attribute name="Main-Class" value="${main}" />
-				<attribute name="Class-Path" value="scala-library.jar" />
+				<attribute name="Class-Path" value="${scala-library.jar}" />
 			</manifest>
 		</jar>
 	</target>
