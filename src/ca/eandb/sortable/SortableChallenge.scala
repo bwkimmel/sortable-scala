@@ -4,7 +4,6 @@
 package ca.eandb.sortable
 
 import scala.io._
-import com.twitter.json._
 import java.io.FileWriter
 import java.io.PrintStream
 import scala.util.parsing.json.JSON
