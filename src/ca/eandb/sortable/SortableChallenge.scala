@@ -49,7 +49,7 @@ object SortableChallenge {
       JSON parseRaw line match {
         case Some(json : JSONObject) => Some(new Product(json))
         case _ => None
-      }).toList
+      }).toList		// convert iterator to list now so we can time it
     var end = System.currentTimeMillis()
     printf("%dms", end - start)
     println
@@ -65,13 +65,12 @@ object SortableChallenge {
       JSON parseRaw line match {
         case Some(json : JSONObject) => Some(new Listing(json))
         case _ => None
-      }).toList
+      }).toList		// convert iterator to list now so we can time it
     end = System.currentTimeMillis()
     printf("%dms", end - start)
     println
     
-    // Read the products from the products file and build the data
-    // structures necessary to process the listings.
+    // build the data structures necessary to process the listings
     print("Building product data structures... ")
     start = System.currentTimeMillis()
     val builder = new ProductTrieBuilder
@@ -88,28 +87,34 @@ object SortableChallenge {
     print("Matching listings... ")
     start = System.currentTimeMillis()
     val matcher = new ListingMatcher(builder)
-    var count = 0			// total number of listings
+    var totalCount = 0		// total number of listings
     var matchCount = 0		// number of matching listings
     
     listings.foreach(listing => {
       listing.product = matcher.matchListing(listing)
-      if (!listing.product.isEmpty)
-        matchCount += 1
-      count += 1
+      listing.product match {
+        case Some(product) => { product.listings = listing :: product.listings; matchCount += 1 }
+        case None => ()
+      }
+      totalCount += 1
     })
     end = System.currentTimeMillis()
     printf("%dms", end - start)
     println
-    
+        
     print("Printing results... ")
     start = System.currentTimeMillis()
-    listings.foreach(out println _.toJSON)
+    val groupByListing = System.getProperty("ca.eandb.sortable.groupByListing", "false").toBoolean
+    if (groupByListing)
+      listings.foreach(out println _.toJSON)
+    else
+      products.foreach(out println _.toJSON)
     out.close
     end = System.currentTimeMillis()
     printf("%dms", end - start)
     println
 
-    printf("Matched %d of %d listings.", matchCount, count);
+    printf("Matched %d of %d listings.", matchCount, totalCount);
     println
 
   }

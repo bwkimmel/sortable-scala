@@ -29,19 +29,23 @@ final class Listing(
         json.obj("manufacturer").toString,
         json.obj("currency").toString,
         json.obj("price").toString.toFloat)
+        
+  def toJSON : JSONObject = toJSON(true)
 
   /** Gets a JSON representation of this <code>Listing</code>. */
-  def toJSON =
+  def toJSON(recurse : Boolean) =
     new JSONObject({
       val fields = Map(
         "title" -> title,
         "manufacturer" -> manufacturer,
         "currency" -> currency,
         "price" -> price)
-      product match {
-        case Some(x) => fields + { "product_name" -> x.name }
-        case None => fields
-      }
+      if (recurse) {
+        product match {
+          case Some(x) => fields + { "product_name" -> x.name }
+          case None => fields
+        }
+      } else fields
     })
 
 }

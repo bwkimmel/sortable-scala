@@ -3,6 +3,7 @@
  */
 package ca.eandb.sortable
 import scala.util.parsing.json.JSONObject
+import scala.util.parsing.json.JSONArray
 
 /**
  * An entity object representing a product.
@@ -14,6 +15,8 @@ final class Product(
     val model : String,
     val family : String,
     val announcedDate : String) {
+  
+  var listings = List.empty[Listing]
   
   /**
    * Creates a <code>Product</code> from a <code>JSONObject</code> containing
@@ -34,12 +37,17 @@ final class Product(
 
   /** Gets a JSON representation of this <code>Listing</code>. */
   def toJSON =
-    new JSONObject(Map(
-	  "product_name" -> name,
-	  "manufacturer" -> manufacturer,
-	  "model" -> model,
-	  "family" -> family,
-	  "announced-date" -> announcedDate))
+    new JSONObject({
+      val fields = Map(
+        "product_name" -> name,
+        "manufacturer" -> manufacturer,
+        "model" -> model,
+        "family" -> family,
+        "announced-date" -> announcedDate)
+      if (!listings.isEmpty)
+        fields + { "products" -> new JSONArray(listings.map(_.toJSON(false))) }
+      else fields
+    })
 
   override def toString = name
 
