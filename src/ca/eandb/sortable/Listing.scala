@@ -2,8 +2,7 @@
  *
  */
 package ca.eandb.sortable
-import com.twitter.json.Json
-import com.twitter.json.JsonSerializable
+import scala.util.parsing.json.JSONObject
 
 /**
  * An entity object representing a listing.
@@ -13,33 +12,27 @@ final class Listing(
     val title : String,
     val manufacturer : String,
     val currency : String,
-    val price : Float) extends JsonSerializable {
+    val price : Float) {
   
   /** An optional <code>Product</code> associated with this listing. */
   var product : Option[Product] = None
 
   /**
-   * Creates a <code>Listing</code> from a <code>Map</code> containing its
-   * properties.
-   * @param fields A <code>Map</code> containing the values for the fields of
-   *   the <code>Listing</code>.
+   * Creates a <code>Listing</code> from a <code>JSONObject</code> containing
+   * its properties.
+   * @param json A <code>JSONObject</code> containing the values for the fields
+   *   of the <code>Listing</code>.
    */
-  def this(fields: Map[String, String]) =
+  def this(json: JSONObject) =
     this(
-        fields("title"),
-        fields("manufacturer"),
-        fields("currency"),
-        fields("price").toFloat)
-  
-  /** Creates a <code>Listing</code> from an object convertible to a
-   * <code>Map[String, String]</code>.
-   * @param any An object convertible to a <code>Map[String, String]</code>. 
-   */
-  def this(any: Any) =
-    this(any.asInstanceOf[Map[String, String]])
+        json.obj("title").toString,
+        json.obj("manufacturer").toString,
+        json.obj("currency").toString,
+        json.obj("price").toString.toFloat)
 
-  override def toJson =
-    (Json build {
+  /** Gets a JSON representation of this <code>Listing</code>. */
+  def toJSON =
+    new JSONObject({
       val fields = Map(
         "title" -> title,
         "manufacturer" -> manufacturer,
@@ -49,6 +42,6 @@ final class Listing(
         case Some(x) => fields + { "product_name" -> x.name }
         case None => fields
       }
-    }) toString
+    })
 
 }

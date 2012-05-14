@@ -2,8 +2,7 @@
  *
  */
 package ca.eandb.sortable
-import com.twitter.json.Json
-import com.twitter.json.JsonSerializable
+import scala.util.parsing.json.JSONObject
 
 /**
  * An entity object representing a product.
@@ -14,41 +13,33 @@ final class Product(
     val manufacturer : String,
     val model : String,
     val family : String,
-    val announcedDate : String) extends JsonSerializable {
+    val announcedDate : String) {
   
   /**
-   * Creates a <code>Product</code> from a <code>Map</code> indicating its
-   * properties.
-   * @param fields A <code>Map</code> indicating the values of the fields
+   * Creates a <code>Product</code> from a <code>JSONObject</code> containing
+   * its properties
+   * @param json A <code>JSONObject</code> indicating the values of the fields
    * 	for the <code>Product</code>.
    */
-  def this(fields: Map[String, String]) =
+  def this(json: JSONObject) =
     this(
-        fields("product_name"),
-        fields("manufacturer"),
-        fields("model"),
-        fields get "family" match {
-          case Some(family) => family
+        json.obj("product_name").toString,
+        json.obj("manufacturer").toString,
+        json.obj("model").toString,
+        json.obj get "family" match {
+          case Some(family) => family.toString
           case None => ""
         },
-        fields("announced-date"))
-  
-  /**
-   * Creates a <code>Product</code> from an object that is convertible to a
-   * <code>Map[String, String]</code>.
-   * @param any An object convertible to a <code>Map[String, String]</code>.
-   * @see this(Map[String, String])
-   */
-  def this(any: Any) =
-    this(any.asInstanceOf[Map[String, String]])
-    
-  override def toJson =
-    (Json build Map(
+        json.obj("announced-date").toString)
+
+  /** Gets a JSON representation of this <code>Listing</code>. */
+  def toJSON =
+    new JSONObject(Map(
 	  "product_name" -> name,
 	  "manufacturer" -> manufacturer,
 	  "model" -> model,
 	  "family" -> family,
-	  "announced-date" -> announcedDate)) toString
+	  "announced-date" -> announcedDate))
 
   override def toString = name
 

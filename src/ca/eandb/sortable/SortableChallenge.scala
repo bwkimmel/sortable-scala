@@ -7,6 +7,8 @@ import scala.io._
 import com.twitter.json._
 import java.io.FileWriter
 import java.io.PrintStream
+import scala.util.parsing.json.JSON
+import scala.util.parsing.json.JSONObject
 
 /**
  * An application that matches product listings to a collection of known
@@ -41,53 +43,74 @@ object SortableChallenge {
       System.exit(1);
     }
     
-    // Read the products from the products file and build the data
-    // structures necessary to process the listings.
-    val builder = new ProductTrieBuilder
+    print("Parsing products... ")
     var start = System.currentTimeMillis()
-    Source.fromFile(args(0)).getLines.foreach(line =>
-        builder += new Product(Json.parse(line)))
+    val products = Source.fromFile(args(0)).getLines.flatMap(line =>
+      JSON parseRaw line match {
+        case Some(json : JSONObject) => Some(new Product(json))
+        case _ => None
+      }).toList
     var end = System.currentTimeMillis()
-    
-    printf("Time required to build product data structures: %dms", end - start);
-    println()
-    
-    val matcher = new ListingMatcher(builder)
-    val listings = 
+    printf("%dms", end - start)
+    println
+
+    val listingsFile = 
       if (args.length > 1 && !(args(1) equals "-"))
         Source.fromFile(args(1))
       else Source.fromInputStream(System.in)
+    
+    print("Parsing listings... ")
+    start = System.currentTimeMillis()
+    val listings = listingsFile.getLines.flatMap(line =>
+      JSON parseRaw line match {
+        case Some(json : JSONObject) => Some(new Listing(json))
+        case _ => None
+      }).toList
+    end = System.currentTimeMillis()
+    printf("%dms", end - start)
+    println
+    
+    // Read the products from the products file and build the data
+    // structures necessary to process the listings.
+    print("Building product data structures... ")
+    start = System.currentTimeMillis()
+    val builder = new ProductTrieBuilder
+    products.foreach(builder += _)
+    end = System.currentTimeMillis()
+    printf("%dms", end - start)
+    println
 
-    var count = 0			// total number of listings
-    var matchCount = 0		// number of matching listings
     val out =
       if (args.length > 2 && !(args(2) equals "-"))
         new PrintStream(args(2))
       else System.out
-      
-    // Read the listings, match then against the products, and print the
-    // results.
+
+    print("Matching listings... ")
     start = System.currentTimeMillis()
-    val results = listings.getLines.map(line => {
-      val listing = new Listing(Json.parse(line))
+    val matcher = new ListingMatcher(builder)
+    var count = 0			// total number of listings
+    var matchCount = 0		// number of matching listings
+    
+    listings.foreach(listing => {
       listing.product = matcher.matchListing(listing)
-      listing.product match {
-        case Some(x) => matchCount += 1;
-        case None => ()
-      }
+      if (!listing.product.isEmpty)
+        matchCount += 1
       count += 1
-      listing.toJson
     })
-
-    results.foreach(out println)
-    out.close()
     end = System.currentTimeMillis()
-
-    printf("Time required to analyse listings: %dms", end - start);
-    println()
+    printf("%dms", end - start)
+    println
+    
+    print("Printing results... ")
+    start = System.currentTimeMillis()
+    listings.foreach(out println _.toJSON)
+    out.close
+    end = System.currentTimeMillis()
+    printf("%dms", end - start)
+    println
 
     printf("Matched %d of %d listings.", matchCount, count);
-    println()
+    println
 
   }
   
