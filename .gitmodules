@@ -1,3 +1,0 @@
-[submodule "ext/scala-json"]
-	path = ext/scala-json
-	url = git://github.com/stevej/scala-json.git
