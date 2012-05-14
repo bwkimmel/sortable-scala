@@ -1,0 +1,139 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="sortable-challenge" default="run-with-default-data">
+
+	<property name="src.dir" value="src" />
+	<property name="lib.dir" value="lib" />
+	<property name="build.dir" value="build" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="dist.dir" value="${build.dir}/dist" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="data.dir" value="data" />
+	<property name="output.dir" value="output" />
+	
+	<property name="default.data.url" value="http://blog.snapsort.com/files" />
+	<property name="default.data.tar" value="challenge_data_20110429.tar.gz" />
+	
+	<property name="main" value="ca.eandb.sortable.SortableChallenge" />
+	
+	<target name="init">
+	  <property environment="env"/>
+	 
+	  <!-- check for required tools -->
+	  <fail message="Missing SCALA_HOME variable in OS environment">
+	    <condition><isset property="${env.SCALA_HOME}"/></condition>
+	  </fail>
+	  <fail message="Missing JAVA_HOME variable in OS environment">
+	    <condition><isset property="${env.JAVA_HOME}"/></condition>
+	  </fail>
+	 
+	  <!-- variables for paths and files -->
+	  <property name="src.dir" location="${basedir}/src"/>
+	  <property name="lib.dir" location="${basedir}/lib"/>
+	  <property name="build.dir" location="${basedir}/build"/>
+	  <property name="classes.dir" location="${build.dir}/classes"/>
+	  <property name="java.dir" location="${env.JAVA_HOME}"/>
+	  <property name="scala.dir" location="${env.SCALA_HOME}"/>
+	  <property name="scala-library.jar" location="${scala.dir}/lib/scala-library.jar"/>
+	  <property name="scala-compiler.jar" location="${scala.dir}/lib/scala-compiler.jar"/>
+	 
+	  <path id="project.classpath">
+	    <pathelement location="${scala-library.jar}"/>
+	    <pathelement location="${build-classes.dir}"/> <!-- used during recompilation -->
+	  </path>
+	 
+	  <path id="scala.classpath">
+	    <pathelement location="${scala-compiler.jar}"/>
+	    <pathelement location="${scala-library.jar}"/>
+	  </path>	
+	 
+	  <!-- load scala's ant tasks -->
+	  <taskdef resource="scala/tools/ant/antlib.xml" classpathref="scala.classpath"/>
+	 
+	  <!-- print where this project will get scala and java from -->
+	  <echo message="Init project"/>
+	  <echo message=" with scala.dir = ${scala.dir}"/>
+	  <echo message=" with java.dir = ${java.dir}"/>
+	
+	  <!-- check if any files has been modified since last build -->
+	  <uptodate property="build.uptodate" targetfile="${build.dir}/build.done">
+	    <srcfiles dir= "${src.dir}" includes="**"/>
+	    <srcfiles dir= "${lib.dir}" includes="**"/>
+	  </uptodate>
+	</target>
+
+	<target name="clean" description="--> cleans all compiled source code">
+		<delete dir="${build.dir}" />
+		
+	</target>
+	
+	<target name="clean-all" depends="clean" description="--> cleans everything, including data and output directories">
+		<delete dir="${data.dir}" />
+		<delete dir="${output.dir}" />
+	</target>
+	
+	<target name="compile" depends="init">
+		<mkdir dir="${classes.dir}" />
+		<scalac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="project.classpath" />
+	</target>
+	
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}.jar">
+			<fileset dir="${classes.dir}" includes="**" />
+			<manifest>
+				<attribute name="Main-Class" value="${main}" />
+				<attribute name="Class-Path" value="scala-library.jar" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="dist" depends="jar">
+		<mkdir dir="${dist.dir}" />
+		<copy file="${jar.dir}/${ant.project.name}.jar" todir="${dist.dir}" />
+	</target>
+
+	<target name="retrieve-default-data" description="--> retrieve the default product/listings data used to test against">
+		<mkdir dir="${data.dir}" />
+		<get src="${default.data.url}/${default.data.tar}" dest="${data.dir}/${default.data.tar}" />
+		<untar src="${data.dir}/${default.data.tar}" compression="gzip" dest="${data.dir}" />
+	</target>
+	
+	<propertyset id="sortable-properties">
+		<propertyref prefix="ca.eandb.sortable." />
+	</propertyset>
+
+	<target name="run-with-default-data" depends="dist,retrieve-default-data" description="--> runs the program against the provided test data">
+		<mkdir dir="${output.dir}" />
+		<java classname="${main}">
+			<classpath location="${dist.dir}/${ant.project.name}.jar" />
+			<syspropertyset refid="sortable-properties" />
+			<arg value="${data.dir}/products.txt" />
+			<arg value="${data.dir}/listings.txt" />
+			<arg value="${output.dir}/results.txt" />
+		</java>
+	</target>
+	
+	<target name="input-arg-products" unless="products" description="prompts for products file if necessary">
+		<input addProperty="products" message="Products file:" />
+	</target>
+	
+	<target name="input-arg-listings" unless="listings" description="prompts for listings file if necessary">
+		<input addProperty="listings" message="Listings file:" defaultvalue="-" />
+	</target>
+	
+	<target name="input-arg-results" unless="results" description="prompts for results file if necessary">
+		<input addProperty="results" message="Results file:" defaultvalue="-" />
+	</target>
+	
+	<target name="input-args" depends="input-arg-products,input-arg-listings,input-arg-results" />
+			
+	<target name="run" depends="dist,input-args" description="--> runs the program against user-specified data">
+		<java classname="${main}">
+			<classpath location="${dist.dir}/${ant.project.name}.jar" />
+			<syspropertyset refid="sortable-properties" />
+			<arg value="${products}" />
+			<arg value="${listings}" />
+			<arg value="${results}" />
+		</java>
+	</target>
+
+</project>
