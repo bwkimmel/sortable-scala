@@ -242,7 +242,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
      * reject (b).
      */
     if (useMaximalFlag && results != null && results.size > 1)
-      results.filterNot(_._2)
+      results.filter(_._2)
     else results
     
   }
