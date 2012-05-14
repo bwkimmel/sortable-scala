@@ -17,7 +17,8 @@ final class Product(
     val family : String,
     val announcedDate : String) {
   
-  var listings = List.empty[Listing]
+  /** A <code>List</code> of matching <code>Listing</code>s. */
+  private var listings = List.empty[Listing]
   
   /**
    * Creates a <code>Product</code> from a <code>JSONObject</code> containing
@@ -35,6 +36,12 @@ final class Product(
           case None => ""
         },
         json.obj("announced-date").toString)
+        
+  /**
+   * Associates a <code>Listing</code> with this <code>Product</code>.
+   * @param listing The <code>Listing</code> to associate.        
+   */
+  def addListing(listing : Listing) = listings +:= listing
 
   /** Gets a JSON representation of this <code>Listing</code>. */
   def toJSON =

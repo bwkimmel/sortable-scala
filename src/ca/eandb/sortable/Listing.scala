@@ -3,6 +3,7 @@
  */
 package ca.eandb.sortable
 import scala.util.parsing.json.JSONObject
+import scala.collection.immutable.Map
 
 /**
  * An entity object representing a listing.
@@ -15,7 +16,7 @@ final class Listing(
     val price : Float) {
   
   /** An optional <code>Product</code> associated with this listing. */
-  var product : Option[Product] = None
+  private var product : Option[Product] = None
 
   /**
    * Creates a <code>Listing</code> from a <code>JSONObject</code> containing
@@ -30,17 +31,38 @@ final class Listing(
         json.obj("currency").toString,
         json.obj("price").toString.toFloat)
         
+  /**
+   * Associates a <code>Product</code> with this <code>Listing</code>.
+   * @param product The <code>Product</code> to associate.
+   */
+  def linkProduct(product : Product) = {
+    this.product = Some(product)
+    product.addListing(this)
+  }
+  
+  /**
+   * Determines if this <code>Listing</code> has a matching <code>Product</code>
+   * associated with it.
+   */
+  def isMatched = product isDefined
+        
+  /** Gets a JSON representation of this <code>Listing</code>. */
   def toJSON : JSONObject = toJSON(true)
 
-  /** Gets a JSON representation of this <code>Listing</code>. */
-  def toJSON(recurse : Boolean) =
+  /**
+   * Gets a JSON representation of this <code>Listing</code>.
+   * @param recurse A value indicating weather to show the linked product.
+   * @return The <code>JSONObject</code> representing this
+   *   <code>Listing</code>.
+   */
+  def toJSON(showProduct : Boolean) =
     new JSONObject({
       val fields = Map(
         "title" -> title,
         "manufacturer" -> manufacturer,
         "currency" -> currency,
         "price" -> price)
-      if (recurse) {
+      if (showProduct) {
         product match {
           case Some(x) => fields + { "product_name" -> x.name }
           case None => fields

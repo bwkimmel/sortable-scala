@@ -19,6 +19,16 @@ import scala.util.parsing.json.JSONObject
  */
 object SortableChallenge {
   
+  /** Indicates whether we should only print unmatched listings. */
+  private val printMisses = System.getProperty("ca.eandb.sortable.printMisses", "false").toBoolean
+  
+  /**
+   * Indicates whether we should group the results by listing, rather than by
+   * product.
+   */
+  private val groupByListing = printMisses || 
+    System.getProperty("ca.eandb.sortable.groupByListing", "false").toBoolean
+  
   /**
    * Usage: ca.eandb.sortable.SortableChallenge  <products_file> [<listings_file> 
    *        [<output_file>]]
@@ -61,7 +71,7 @@ object SortableChallenge {
     
     print("Parsing listings... ")
     start = System.currentTimeMillis()
-    val listings = listingsFile.getLines.flatMap(line =>
+    var listings = listingsFile.getLines.flatMap(line =>
       JSON parseRaw line match {
         case Some(json : JSONObject) => Some(new Listing(json))
         case _ => None
@@ -91,9 +101,8 @@ object SortableChallenge {
     var matchCount = 0		// number of matching listings
     
     listings.foreach(listing => {
-      listing.product = matcher.matchListing(listing)
-      listing.product match {
-        case Some(product) => { product.listings = listing :: product.listings; matchCount += 1 }
+      matcher.matchListing(listing) match {
+        case Some(product) => { listing.linkProduct(product); matchCount += 1 }
         case None => ()
       }
       totalCount += 1
@@ -104,7 +113,8 @@ object SortableChallenge {
         
     print("Printing results... ")
     start = System.currentTimeMillis()
-    val groupByListing = System.getProperty("ca.eandb.sortable.groupByListing", "false").toBoolean
+    if (printMisses)
+      listings = listings.filterNot(_.isMatched)
     if (groupByListing)
       listings.foreach(out println _.toJSON)
     else
