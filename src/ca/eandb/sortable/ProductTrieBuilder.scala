@@ -46,7 +46,7 @@ final class ProductTrieBuilder {
    * Adds the sepcified product to the tries.
    * @param product The <code>Product</code> to add.
    */
-  def += (product: Product) = {
+  def += (product: Product) {
 
     /* Add the manufacturer string to a separate trie. */
     processField(manufacturerTrie, product, false, product.manufacturer)
@@ -83,7 +83,7 @@ final class ProductTrieBuilder {
    * @param value The <code>String</code> whose substrings to insert into the
    * 		trie.
    */
-  private def processField(root: ProductTrie, product: Product, isModel: Boolean, value: String) = {
+  private def processField(root: ProductTrie, product: Product, isModel: Boolean, value: String) {
     
      /* Split the string into its component words and insert the concatenation
       * of every consecutive subsequence of those words into the trie, subject
@@ -136,7 +136,7 @@ final class ProductTrieBuilder {
          trie: ProductTrie = root,
          anyLetters: Boolean = false,
          anyNumbers: Boolean = false,
-         totalLength: Int = 0): Unit = {
+         totalLength: Int = 0) {
        if (words nonEmpty) {
          
 		/* Add the word to the tip of the word chain in the trie, but

@@ -35,7 +35,7 @@ final class Listing(
    * Associates a <code>Product</code> with this <code>Listing</code>.
    * @param product The <code>Product</code> to associate.
    */
-  def linkProduct(product : Product) = {
+  def linkProduct(product : Product) {
     this.product = Some(product)
     product.addListing(this)
   }

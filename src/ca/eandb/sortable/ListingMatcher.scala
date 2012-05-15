@@ -124,7 +124,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
      */
     def matchCursors(
         cursors: List[ProductTrie],
-        words: List[String]) : Unit = {
+        words: List[String]) {
       
       // Advance cursors by next word, discard any cursors that fall off
       // the trie, and add the root node back as a new cursor.

@@ -44,7 +44,7 @@ object SortableChallenge {
    *                     
    * @param args The program arguments as specified above.
    */
-  def main(args: Array[String]) = {
+  def main(args: Array[String]) {
     
     // check that we have a valid number of arguments.
     if (args.length < 1 || args.length > 3) {
@@ -129,7 +129,7 @@ object SortableChallenge {
   }
   
   /** Print the usage information for this application. */
-  private def usage = {
+  private def usage {
     Console.printf("Usage: %s <products_file> [<listings_file> [<output_file>]]", SortableChallenge.getClass().getName());
     Console.println();
     Console.println("Matches listings against a collection of products.");

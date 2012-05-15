@@ -91,7 +91,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * of its ancestors.
    * @param f The function to apply.
    */
-  def foreachAncestorOrSelf(f : Trie[T] => Unit) : Unit = {
+  def foreachAncestorOrSelf(f : Trie[T] => Unit) {
     f(this)
     foreachAncestor(f)
   }
@@ -100,7 +100,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * Applies a function <code>f</code> to all of this <code>Trie</code> node's
    * ancestors.
    */
-  def foreachAncestor(f : Trie[T] => Unit) : Unit =
+  def foreachAncestor(f : Trie[T] => Unit) =
     if (!isRoot) parent.foreachAncestorOrSelf(f)
 
   /**
