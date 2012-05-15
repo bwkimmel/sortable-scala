@@ -70,19 +70,19 @@ final class ProductTrieBuilder {
 
   }
   
-	/**
-	 * Inserts substrings of the provided string that are to be considered as
-	 * matches into the trie and associate the specified product with the nodes
-	 * corresponding to the ends of those substrings. 
-	 * @param root The root <code>TrieNode</code> of the trie to insert into.
-	 * @param product The <code>Product</code> to associate with the substrings
-	 * 		of <code>value</code>.
-	 * @param isModel A value indicating if this string is for the model trie
-	 * 		(affects the rules used to judge whether a substring is considered
-	 * 		to be a match).
-	 * @param value The <code>String</code> whose substrings to insert into the
-	 * 		trie.
-	 */
+  /**
+   * Inserts substrings of the provided string that are to be considered as
+   * matches into the trie and associate the specified product with the nodes
+   * corresponding to the ends of those substrings. 
+   * @param root The root <code>TrieNode</code> of the trie to insert into.
+   * @param product The <code>Product</code> to associate with the substrings
+   * 		of <code>value</code>.
+   * @param isModel A value indicating if this string is for the model trie
+   * 		(affects the rules used to judge whether a substring is considered
+   * 		to be a match).
+   * @param value The <code>String</code> whose substrings to insert into the
+   * 		trie.
+   */
   private def processField(root: ProductTrie, product: Product, isModel: Boolean, value: String) = {
     
      /* Split the string into its component words and insert the concatenation
