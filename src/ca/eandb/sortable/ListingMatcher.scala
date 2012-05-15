@@ -22,7 +22,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
    *   <code>Product</code> that matches <code>listing</code>, or
    *   <code>None</code> if no unique <code>Product</code> is found.
    */
-  def matchListing(listing: Listing): Option[Product] = {
+  def matchListing(listing: Listing): Option[String] = {
     val manufacturerProducts = matchAll(builder.manufacturerTrie, listing.manufacturer, null, false)
     if (manufacturerProducts != null)
       matchOne(builder.modelTrie, cleanTitle(listing.title), manufacturerProducts, true)
@@ -266,7 +266,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
       trie: ProductTrie, 
       s: String, 
       filter: ProductMap, 
-      useMaximalFlag: Boolean): Option[Product] = {
+      useMaximalFlag: Boolean): Option[String] = {
     val products = matchAll(trie, s, filter, useMaximalFlag)
     if (products != null && products.size == 1)
       Some(products.head._1)

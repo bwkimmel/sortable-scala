@@ -154,13 +154,13 @@ final class ProductTrieBuilder {
          if (acceptString(nextAnyLetters, nextAnyNumbers, nextTotalLength)) {
            
            // associate the product with the current trie node.
-           tip.data = Some(tip.data.getOrElse(Map.empty) + { product -> true })
+           tip.data = Some(tip.data.getOrElse(Map.empty) + { product.name -> true })
            
            nextAncestor = Some(tip)
 
            // ancestor is no longer maximal
            ancestor match {
-             case Some(prev) => prev.data = Some(prev.data.get + { product -> false })
+             case Some(prev) => prev.data = Some(prev.data.get + { product.name -> false })
              case None => ()
            }
          }
@@ -189,7 +189,7 @@ object ProductTrieBuilder {
    * The key is the <code>Product</code>.  The value indicates if the node
    * corresponds to a maximal match.
    */
-  type ProductMap = scala.collection.Map[Product, Boolean]
+  type ProductMap = scala.collection.Map[String, Boolean]
   
   /**
    * A <code>Trie</code> for associating strings with sets of

@@ -54,11 +54,11 @@ object SortableChallenge {
     
     print("Parsing products... ")
     var start = System.currentTimeMillis()
-    val products = Source.fromFile(args(0)).getLines.flatMap(line =>
+    var products = Map.empty ++ Source.fromFile(args(0)).getLines.flatMap(line =>
       JSON parseRaw line match {
-        case Some(json : JSONObject) => Some(new Product(json))
+        case Some(json : JSONObject) => Some(Product.fromJSON(json).toMapEntry)
         case _ => None
-      }).toList		// convert iterator to list now so we can time it
+      })		// convert iterator to list now so we can time it
     var end = System.currentTimeMillis()
     printf("%dms", end - start)
     println
@@ -70,9 +70,9 @@ object SortableChallenge {
     
     print("Parsing listings... ")
     start = System.currentTimeMillis()
-    var listings = listingsFile.getLines.flatMap(line =>
+    var listings: Iterable[Listing] = listingsFile.getLines.flatMap(line =>
       JSON parseRaw line match {
-        case Some(json : JSONObject) => Some(new Listing(json))
+        case Some(json : JSONObject) => Some(Listing.fromJSON(json))
         case _ => None
       }).toList		// convert iterator to list now so we can time it
     end = System.currentTimeMillis()
@@ -83,7 +83,7 @@ object SortableChallenge {
     print("Building product data structures... ")
     start = System.currentTimeMillis()
     val builder = new ProductTrieBuilder
-    products.foreach(builder += _)
+    products.values.foreach(builder += _)
     end = System.currentTimeMillis()
     printf("%dms", end - start)
     println
@@ -99,12 +99,18 @@ object SortableChallenge {
     var totalCount = 0		// total number of listings
     var matchCount = 0		// number of matching listings
     
-    listings.foreach(listing => {
-      matcher.matchListing(listing) match {
-        case Some(product) => { listing.linkProduct(product); matchCount += 1 }
-        case None => ()
+    listings = listings.map(unmatched => {
+      totalCount += 1;
+      matcher.matchListing(unmatched) match {
+        case Some(name) => {
+          matchCount += 1;
+          val listing = unmatched withProductName name
+          val product = products(name).addListing(listing)      
+          products += product.toMapEntry
+          listing
+        }
+        case None => unmatched
       }
-      totalCount += 1
     })
     end = System.currentTimeMillis()
     printf("%dms", end - start)
@@ -117,7 +123,7 @@ object SortableChallenge {
     if (groupByListing)
       listings.foreach(out println _.toJSON)
     else
-      products.foreach(out println _.toJSON)
+      products.values.foreach(out println _.toJSON)
     out.close
     end = System.currentTimeMillis()
     printf("%dms", end - start)

@@ -9,42 +9,25 @@ import scala.collection.immutable.Map
  * An entity object representing a listing.
  * @author Brad Kimmel
  */
-final class Listing(
+final case class Listing(
     val title: String,
     val manufacturer: String,
     val currency: String,
-    val price: Float) {
-  
-  /** An optional <code>Product</code> associated with this listing. */
-  private var product: Option[Product] = None
-
-  /**
-   * Creates a <code>Listing</code> from a <code>JSONObject</code> containing
-   * its properties.
-   * @param json A <code>JSONObject</code> containing the values for the fields
-   *   of the <code>Listing</code>.
-   */
-  def this(json: JSONObject) =
-    this(
-        json.obj("title").toString,
-        json.obj("manufacturer").toString,
-        json.obj("currency").toString,
-        json.obj("price").toString.toFloat)
+    val price: Float,
+    val productName: Option[String] = None) {
         
   /**
    * Associates a <code>Product</code> with this <code>Listing</code>.
    * @param product The <code>Product</code> to associate.
    */
-  def linkProduct(product: Product) {
-    this.product = Some(product)
-    product.addListing(this)
-  }
+  def withProductName(productName: String): Listing =
+    copy(productName = Some(productName))
   
   /**
    * Determines if this <code>Listing</code> has a matching <code>Product</code>
    * associated with it.
    */
-  def isMatched = product isDefined
+  def isMatched = productName isDefined
         
   /** Gets a JSON representation of this <code>Listing</code>. */
   def toJSON: JSONObject = toJSON(true)
@@ -63,11 +46,27 @@ final class Listing(
         "currency" -> currency,
         "price" -> price)
       if (showProduct) {
-        product match {
-          case Some(x) => fields + ( "product_name" -> x.name )
+        productName match {
+          case Some(x) => fields + ( "product_name" -> x )
           case None => fields
         }
       } else fields
     })
 
+}
+
+object Listing {
+  
+  /**
+   * Creates a <code>Listing</code> from a <code>JSONObject</code> containing
+   * its properties.
+   * @param json A <code>JSONObject</code> containing the values for the fields
+   *   of the <code>Listing</code>.
+   */
+  def fromJSON(json: JSONObject) = Listing(
+    json.obj("title").toString,
+    json.obj("manufacturer").toString,
+    json.obj("currency").toString,
+    json.obj("price").toString.toFloat)
+  
 }
