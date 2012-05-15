@@ -154,13 +154,13 @@ final class ProductTrieBuilder {
          if (acceptString(nextAnyLetters, nextAnyNumbers, nextTotalLength)) {
            
            // associate the product with the current trie node.
-           tip.data = Some(tip.data.getOrElse(Map.empty) + { product.name -> true })
+           tip.data = Some(tip.data.getOrElse(Map.empty) + ( product.name -> true ))
            
            nextAncestor = Some(tip)
 
            // ancestor is no longer maximal
            ancestor match {
-             case Some(prev) => prev.data = Some(prev.data.get + { product.name -> false })
+             case Some(prev) => prev.data = Some(prev.data.get + ( product.name -> false ))
              case None => ()
            }
          }
