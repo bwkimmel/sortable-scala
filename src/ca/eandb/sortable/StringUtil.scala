@@ -17,7 +17,7 @@ object StringUtil {
    * @param s The <code>String</code> to normalize.
    * @return A canonical representation of <code>String</code>.
    */
-  def normalize(s: String) : String =
+  def normalize(s: String): String =
     Normalizer.normalize(s, Normalizer.Form.NFD)
     	.replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
     	.toLowerCase()

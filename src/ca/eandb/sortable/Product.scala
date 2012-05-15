@@ -11,11 +11,11 @@ import scala.collection.immutable.Map
  * @author Brad Kimmel
  */
 final class Product(
-    val name : String,
-    val manufacturer : String,
-    val model : String,
-    val family : String,
-    val announcedDate : String) {
+    val name: String,
+    val manufacturer: String,
+    val model: String,
+    val family: String,
+    val announcedDate: String) {
   
   /** A <code>List</code> of matching <code>Listing</code>s. */
   private var listings = List.empty[Listing]
@@ -41,7 +41,7 @@ final class Product(
    * Associates a <code>Listing</code> with this <code>Product</code>.
    * @param listing The <code>Listing</code> to associate.        
    */
-  def addListing(listing : Listing) { listings +:= listing }
+  def addListing(listing: Listing) { listings +:= listing }
 
   /** Gets a JSON representation of this <code>Listing</code>. */
   def toJSON =

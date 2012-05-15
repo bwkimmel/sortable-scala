@@ -40,7 +40,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * @return The new child <code>Trie</code> node, or the existing child if
    * 		one already exists corresponding to <code>c</code>.
    */
-  def insert(c: Char) : Trie[T] = children get c match {
+  def insert(c: Char): Trie[T] = children get c match {
     case Some(child) => child
     case None => { 
       val child = new Trie[T](this, c)
@@ -56,7 +56,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * 		or the existing descendant if one already exists corresponding to
    * 		<code>s</code>.
    */
-  def insert(s: String) : Trie[T] = (this /: s)(_.insert(_))
+  def insert(s: String): Trie[T] = (this /: s)(_.insert(_))
   
   /**
    * Determines if this <code>Trie</code> node is the root of a trie. 
@@ -79,7 +79,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * @return The specified descendant <code>Trie</code> node, or
    * 		<code>None</code> if no such descendant exists.
    */
-  def find(s: String) : Option[Trie[T]] =
+  def find(s: String): Option[Trie[T]] =
     if (s isEmpty) Some(this)
     else find(s head) match {
       case Some(t) => t find s.tail
@@ -91,7 +91,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * of its ancestors.
    * @param f The function to apply.
    */
-  def foreachAncestorOrSelf(f : Trie[T] => Unit) {
+  def foreachAncestorOrSelf(f: Trie[T] => Unit) {
     f(this)
     foreachAncestor(f)
   }
@@ -100,7 +100,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * Applies a function <code>f</code> to all of this <code>Trie</code> node's
    * ancestors.
    */
-  def foreachAncestor(f : Trie[T] => Unit) =
+  def foreachAncestor(f: Trie[T] => Unit) =
     if (!isRoot) parent.foreachAncestorOrSelf(f)
 
   /**
@@ -111,7 +111,7 @@ final class Trie[T](val parent: Trie[T] = null, val char: Char = '\0') {
    * @return The prefix string representing the path from the root node to
    *   this node, with <code>a</code> appended.
    */
-  private def pathString(a: String = "") : String =
+  private def pathString(a: String = ""): String =
     if (parent != null)
       parent.pathString(char + a)
     else a

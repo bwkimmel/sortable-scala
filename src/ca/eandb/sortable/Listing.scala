@@ -10,13 +10,13 @@ import scala.collection.immutable.Map
  * @author Brad Kimmel
  */
 final class Listing(
-    val title : String,
-    val manufacturer : String,
-    val currency : String,
-    val price : Float) {
+    val title: String,
+    val manufacturer: String,
+    val currency: String,
+    val price: Float) {
   
   /** An optional <code>Product</code> associated with this listing. */
-  private var product : Option[Product] = None
+  private var product: Option[Product] = None
 
   /**
    * Creates a <code>Listing</code> from a <code>JSONObject</code> containing
@@ -35,7 +35,7 @@ final class Listing(
    * Associates a <code>Product</code> with this <code>Listing</code>.
    * @param product The <code>Product</code> to associate.
    */
-  def linkProduct(product : Product) {
+  def linkProduct(product: Product) {
     this.product = Some(product)
     product.addListing(this)
   }
@@ -47,7 +47,7 @@ final class Listing(
   def isMatched = product isDefined
         
   /** Gets a JSON representation of this <code>Listing</code>. */
-  def toJSON : JSONObject = toJSON(true)
+  def toJSON: JSONObject = toJSON(true)
 
   /**
    * Gets a JSON representation of this <code>Listing</code>.
@@ -55,7 +55,7 @@ final class Listing(
    * @return The <code>JSONObject</code> representing this
    *   <code>Listing</code>.
    */
-  def toJSON(showProduct : Boolean) =
+  def toJSON(showProduct: Boolean) =
     new JSONObject({
       val fields = Map(
         "title" -> title,
@@ -64,7 +64,7 @@ final class Listing(
         "price" -> price)
       if (showProduct) {
         product match {
-          case Some(x) => fields + { "product_name" -> x.name }
+          case Some(x) => fields + ( "product_name" -> x.name )
           case None => fields
         }
       } else fields

@@ -22,7 +22,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
    *   <code>Product</code> that matches <code>listing</code>, or
    *   <code>None</code> if no unique <code>Product</code> is found.
    */
-  def matchListing(listing: Listing) : Option[Product] = {
+  def matchListing(listing: Listing): Option[Product] = {
     val manufacturerProducts = matchAll(builder.manufacturerTrie, listing.manufacturer, null, false)
     if (manufacturerProducts != null)
       matchOne(builder.modelTrie, cleanTitle(listing.title), manufacturerProducts, true)
@@ -63,7 +63,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
       trie: ProductTrie, 
       s: String, 
       filter: ProductMap, 
-      useMaximalFlag: Boolean) : ProductMap = {
+      useMaximalFlag: Boolean): ProductMap = {
     
     /* Attempt to match all of the sequences of consecutive words against
      * against the provided trie.  For example, if s is "The quick brown
@@ -128,7 +128,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
       
       // Advance cursors by next word, discard any cursors that fall off
       // the trie, and add the root node back as a new cursor.
-      val nextCursors : List[ProductTrie] = 
+      val nextCursors: List[ProductTrie] = 
         trie :: cursors.flatMap(_.find(words.head))
         
       // keep track of matching cursors
@@ -136,7 +136,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
         case Some(x) => {
           var products = if (filter != null) x.filterKeys(filter contains) else x 
           if (products.nonEmpty) {
-            matches += { node -> products }
+            matches += node -> products
             node.foreachAncestor(matches remove); // only keep maximal matches
           }
         }
@@ -199,7 +199,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
      *      between such pairs of nodes do not affect the results.  We only
      *      consider maximal matches.
      */
-    var results : ProductMap = null;
+    var results: ProductMap = null;
     var foundSingleton = false;
     matches.values.foreach(products => {
       if (!foundSingleton && products.size == 1) {
@@ -266,7 +266,7 @@ final class ListingMatcher(val builder: ProductTrieBuilder) {
       trie: ProductTrie, 
       s: String, 
       filter: ProductMap, 
-      useMaximalFlag: Boolean) : Option[Product] = {
+      useMaximalFlag: Boolean): Option[Product] = {
     val products = matchAll(trie, s, filter, useMaximalFlag)
     if (products != null && products.size == 1)
       Some(products.head._1)
