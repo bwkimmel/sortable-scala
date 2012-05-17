@@ -119,6 +119,7 @@ object SortableChallenge {
       else if (groupByListing) results
       else products.values
     toPrint.foreach(out println _.toJSON)
+    out.flush()
     end = System.currentTimeMillis()
     println("%dms".format(end - start))
 
