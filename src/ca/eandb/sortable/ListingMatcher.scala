@@ -143,7 +143,7 @@ final class ListingMatcher(private val builder: ProductTrieBuilder) {
             node.foreachAncestor(matches remove); // only keep maximal matches
           }
         }
-        case None => ()
+        case None =>
       })
           
       // advance to next word
@@ -204,7 +204,7 @@ final class ListingMatcher(private val builder: ProductTrieBuilder) {
      */
     var results: ProductMap = Map.empty
     var foundSingleton = false;
-    matches.values.foreach(products => {
+    matches.values.foreach(products =>
       if (!foundSingleton && products.size == 1) {
         foundSingleton = true;
         results = products
@@ -218,8 +218,7 @@ final class ListingMatcher(private val builder: ProductTrieBuilder) {
         } else {
           results = products
         }
-      }
-    })
+      })
     
     /* If there are still multiple matching products, eliminate all those
      * matches which are not maximal (i.e., for which there is some suffix

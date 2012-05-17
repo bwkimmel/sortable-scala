@@ -161,7 +161,7 @@ final class ProductTrieBuilder {
            // ancestor is no longer maximal
            ancestor match {
              case Some(prev) => prev.data = Some(prev.data.get + ( product.name -> false ))
-             case None => ()
+             case None =>
            }
          }
          
