@@ -10,11 +10,11 @@ import scala.collection.immutable.Map
  * @author Brad Kimmel
  */
 final case class Listing(
-    val title: String,
-    val manufacturer: String,
-    val currency: String,
-    val price: Float,
-    val productName: Option[String] = None) {
+    title: String,
+    manufacturer: String,
+    currency: String,
+    price: Float,
+    productName: Option[String] = None) extends JSONEntity {
         
   /**
    * Associates a <code>Product</code> with this <code>Listing</code>.
@@ -27,7 +27,7 @@ final case class Listing(
    * Determines if this <code>Listing</code> has a matching <code>Product</code>
    * associated with it.
    */
-  def isMatched = productName isDefined
+  def isMatched: Boolean = productName isDefined
         
   /** Gets a JSON representation of this <code>Listing</code>. */
   def toJSON: JSONObject = toJSON(true)
@@ -38,7 +38,7 @@ final case class Listing(
    * @return The <code>JSONObject</code> representing this
    *   <code>Listing</code>.
    */
-  def toJSON(showProduct: Boolean) =
+  def toJSON(showProduct: Boolean): JSONObject =
     new JSONObject({
       val fields = Map(
         "title" -> title,
@@ -63,7 +63,7 @@ object Listing {
    * @param json A <code>JSONObject</code> containing the values for the fields
    *   of the <code>Listing</code>.
    */
-  def fromJSON(json: JSONObject) = Listing(
+  def fromJSON(json: JSONObject): Listing = Listing(
     json.obj("title").toString,
     json.obj("manufacturer").toString,
     json.obj("currency").toString,

@@ -60,36 +60,33 @@ object SortableChallenge {
         case _ => None
       })		// convert iterator to list now so we can time it
     var end = System.currentTimeMillis()
-    printf("%dms", end - start)
-    println
+    println("%dms".format(end - start))
 
     val listingsFile = 
-      if (args.length > 1 && !(args(1) equals "-"))
+      if (args.length > 1 && !(args(1) == "-"))
         Source.fromFile(args(1))
       else Source.fromInputStream(System.in)
     
     print("Parsing listings... ")
     start = System.currentTimeMillis()
-    var listings: Iterable[Listing] = listingsFile.getLines.flatMap(line =>
+    val listings: Iterable[Listing] = listingsFile.getLines.flatMap(line =>
       JSON parseRaw line match {
         case Some(json : JSONObject) => Some(Listing.fromJSON(json))
         case _ => None
       }).toList		// convert iterator to list now so we can time it
     end = System.currentTimeMillis()
-    printf("%dms", end - start)
-    println
+    println("%dms".format(end - start))
     
     // build the data structures necessary to process the listings
     print("Building product data structures... ")
     start = System.currentTimeMillis()
     val builder = new ProductTrieBuilder
-    products.values.foreach(builder += _)
+    products.values.foreach(builder.addProduct)
     end = System.currentTimeMillis()
-    printf("%dms", end - start)
-    println
+    println("%dms".format(end - start))
 
     val out =
-      if (args.length > 2 && !(args(2) equals "-"))
+      if (args.length > 2 && !(args(2) == "-"))
         new PrintStream(args(2))
       else System.out
 
@@ -99,7 +96,7 @@ object SortableChallenge {
     var totalCount = 0		// total number of listings
     var matchCount = 0		// number of matching listings
     
-    listings = listings.map(unmatched => {
+    val results = listings.map(unmatched => {
       totalCount += 1;
       matcher.matchListing(unmatched) match {
         case Some(name) => {
@@ -113,41 +110,35 @@ object SortableChallenge {
       }
     })
     end = System.currentTimeMillis()
-    printf("%dms", end - start)
-    println
+    println("%dms".format(end - start))
         
     print("Printing results... ")
     start = System.currentTimeMillis()
-    if (printMisses)
-      listings = listings.filterNot(_.isMatched)
-    if (groupByListing)
-      listings.foreach(out println _.toJSON)
-    else
-      products.values.foreach(out println _.toJSON)
-    out.close
+    val toPrint =
+      if (printMisses) results.filterNot(_.isMatched)
+      else if (groupByListing) results
+      else products.values
+    toPrint.foreach(out println _.toJSON)
     end = System.currentTimeMillis()
-    printf("%dms", end - start)
-    println
+    println("%dms".format(end - start))
 
-    printf("Matched %d of %d listings.", matchCount, totalCount);
-    println
+    println("Matched %d of %d listings.".format(matchCount, totalCount));
 
   }
   
   /** Print the usage information for this application. */
   private def usage {
-    Console.printf("Usage: %s <products_file> [<listings_file> [<output_file>]]", SortableChallenge.getClass().getName());
-    Console.println();
-    Console.println("Matches listings against a collection of products.");
-    Console.println();
-    Console.println("  <products_file> - A file containing a list of products formatted as JSON");
-    Console.println("                    objects, one per line.");
-    Console.println("  <listings_file> - A file containing a collection of listings formatted as");
-    Console.println("                    JSON objects, one per line.  If not specified, stdin is");
-    Console.println("                    used.  A dash (-) may also be specified for stdin.");
-    Console.println("  <output_file>   - A file to which to write the results.  If not specified,");
-    Console.println("                    stdout is used.  A dash (-) may also be specified for");
-    Console.println("                    stdout.");
+    println("Usage: %s <products_file> [<listings_file> [<output_file>]]" format SortableChallenge.getClass().getName());
+    println("Matches listings against a collection of products.");
+    println();
+    println("  <products_file> - A file containing a list of products formatted as JSON");
+    println("                    objects, one per line.");
+    println("  <listings_file> - A file containing a collection of listings formatted as");
+    println("                    JSON objects, one per line.  If not specified, stdin is");
+    println("                    used.  A dash (-) may also be specified for stdin.");
+    println("  <output_file>   - A file to which to write the results.  If not specified,");
+    println("                    stdout is used.  A dash (-) may also be specified for");
+    println("                    stdout.");
   }
   
 }

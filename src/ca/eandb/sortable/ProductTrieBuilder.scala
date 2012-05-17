@@ -46,7 +46,7 @@ final class ProductTrieBuilder {
    * Adds the sepcified product to the tries.
    * @param product The <code>Product</code> to add.
    */
-  def += (product: Product) {
+  def addProduct(product: Product) {
 
     /* Add the manufacturer string to a separate trie. */
     processField(manufacturerTrie, product, false, product.manufacturer)
@@ -109,7 +109,7 @@ final class ProductTrieBuilder {
       *   search against a word list (such as the unix word list).
       * - Don't consider short strings of only numbers to be a match.
       */
-     def acceptString(anyLetters: Boolean, anyNumbers: Boolean, totalLength: Int) =
+     def acceptString(anyLetters: Boolean, anyNumbers: Boolean, totalLength: Int): Boolean =
        (totalLength > 1) &&
        ((!isModel) || (totalLength <= 3) || anyNumbers) &&
        ((totalLength >= 4) || anyLetters)

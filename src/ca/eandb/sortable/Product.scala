@@ -11,22 +11,22 @@ import scala.collection.immutable.Map
  * @author Brad Kimmel
  */
 final case class Product(
-    val name: String,
-    val manufacturer: String,
-    val model: String,
-    val family: String,
-    val announcedDate: String,
-    val listings: List[Listing] = Nil) {
+    name: String,
+    manufacturer: String,
+    model: String,
+    family: String,
+    announcedDate: String,
+    listings: List[Listing] = Nil) extends JSONEntity {
   
   /**
    * Associates a <code>Listing</code> with this <code>Product</code>.
    * @param listing The <code>Listing</code> to associate.        
    */
-  def addListing(listing: Listing) =
+  def addListing(listing: Listing): Product =
     copy(listings = listing :: listings)
 
   /** Gets a JSON representation of this <code>Listing</code>. */
-  def toJSON =
+  def toJSON: JSONObject =
     new JSONObject({
       val fields = Map(
         "product_name" -> name,
@@ -43,9 +43,9 @@ final case class Product(
    * Creates a <code>Tuple</code> that can be used as a <code>Map</code> entry
    * to look up this <code>Product</code> by its name.
    */
-  def toMapEntry = name -> this
+  def toMapEntry: (String, Product) = name -> this
 
-  override def toString = name
+  override def toString: String = name
 
 }
 
@@ -57,7 +57,7 @@ object Product {
    * @param json A <code>JSONObject</code> indicating the values of the fields
    * 	for the <code>Product</code>.
    */
-  def fromJSON(json: JSONObject) = Product(
+  def fromJSON(json: JSONObject): Product = Product(
     json.obj("product_name").toString,
     json.obj("manufacturer").toString,
     json.obj("model").toString,
