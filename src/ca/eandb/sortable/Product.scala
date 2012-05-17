@@ -26,18 +26,18 @@ final case class Product(
     copy(listings = listing :: listings)
 
   /** Gets a JSON representation of this <code>Listing</code>. */
-  def toJSON: JSONObject =
-    new JSONObject({
-      val fields = Map(
-        "product_name" -> name,
-        "manufacturer" -> manufacturer,
-        "model" -> model,
-        "family" -> family,
-        "announced-date" -> announcedDate)
+  def toJSON: JSONObject = {
+    val fields = Map(
+      "product_name" -> name,
+      "manufacturer" -> manufacturer,
+      "model" -> model,
+      "family" -> family,
+      "announced-date" -> announcedDate)
+    new JSONObject(
       if (!listings.isEmpty)
-        fields + { "listings" -> new JSONArray(listings.map(_.toJSON(false))) }
-      else fields
-    })
+        fields + ( "listings" -> new JSONArray(listings.map(_.toJSON(false))) )
+      else fields)
+  }
   
   /**
    * Creates a <code>Tuple</code> that can be used as a <code>Map</code> entry
